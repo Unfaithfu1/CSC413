@@ -1,7 +1,7 @@
 package edu.sfsu.csc413.chess;
 
 import edu.sfsu.csc413.chess.model.*;
-import edu.sfsu.csc413.chess.view.*;
+import edu.sfsu.csc413.chess.factory.BoardFactory;
 
 /**
  * Entry point.
@@ -12,37 +12,22 @@ import edu.sfsu.csc413.chess.view.*;
 public final class Main {
 
     public static void main(String[] args) {
-        Board board = new Board();
+        Board board = BoardFactory.standard();
 
-        PieceType[] backRank = {
-            PieceType.ROOK,
-            PieceType.KNIGHT,
-            PieceType.BISHOP,
-            PieceType.QUEEN,
-            PieceType.KING,
-            PieceType.BISHOP,
-            PieceType.KNIGHT,
-            PieceType.ROOK
-        };
+        for (int rank = Position.BOARD_SIZE - 1; rank >= 0; rank--) {
+            for (int file = 0; file < Position.BOARD_SIZE; file++) {
+                Piece piece = board.pieceAt(new Position(file, rank));
 
-        for (int rank = 0; rank < Position.BOARD_SIZE; rank++){
-            Piece whiteBack = new Piece(Color.WHITE, backRank[rank]);
-            Position whitePosition = new Position(rank, 0);
-            board.place(whitePosition, whiteBack);
+                if (piece == null) {
+                    System.out.print(". ");
+                } else {
+                    System.out.print(piece + " ");
+                }
+            }
 
-            Piece whitePiece = new Piece(Color.WHITE, PieceType.PAWN);
-            Position whitePawnPosition = new Position(rank, 1);
-            board.place(whitePawnPosition, whitePiece);
-
-            Piece blackBack = new Piece(Color.BLACK, backRank[rank]);
-            Position blackPosition = new Position(rank, 7);
-            board.place(blackPosition, blackBack);
-
-            Piece blackPiece = new Piece(Color.BLACK, PieceType.PAWN);
-            Position blackPawnPosition = new Position(rank, 6);
-            board.place(blackPawnPosition, blackPiece);
+            System.out.println();
         }
-        System.out.println(new TextBoardRenderer(PieceGlyphs.LETTERS).render(board));
+        
     }
 
     private Main() {
