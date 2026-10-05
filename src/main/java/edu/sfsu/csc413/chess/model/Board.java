@@ -42,6 +42,22 @@ public class Board {
         return positions;
     }
 
+    public void apply(Move move){
+        Position from = move.from();
+        Position to = move.to();
+        Piece piece = pieceAt(from);
+        place(to, piece);
+        place(from, null);
+    }
+
+    public void undo(Move move){
+        Position from = move.from();
+        Position to = move.to();
+        Piece piece = pieceAt(to);
+        place(from, piece);
+        place(to, move.captured());
+    }
+
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();

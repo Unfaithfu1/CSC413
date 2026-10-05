@@ -1,7 +1,9 @@
 package edu.sfsu.csc413.chess;
 
-import edu.sfsu.csc413.chess.model.*;
-import edu.sfsu.csc413.chess.factory.BoardFactory;
+import edu.sfsu.csc413.chess.view.TextBoardRenderer;
+import edu.sfsu.csc413.chess.view.PieceGlyphs;
+import edu.sfsu.csc413.chess.engine.*;
+import java.util.List;
 
 /**
  * Entry point.
@@ -12,22 +14,17 @@ import edu.sfsu.csc413.chess.factory.BoardFactory;
 public final class Main {
 
     public static void main(String[] args) {
-        Board board = BoardFactory.standard();
+        Game game = new Game();
+        TextBoardRenderer renderer = new TextBoardRenderer(PieceGlyphs.LETTERS);
+        System.out.println(renderer.render(game.board()));
 
-        for (int rank = Position.BOARD_SIZE - 1; rank >= 0; rank--) {
-            for (int file = 0; file < Position.BOARD_SIZE; file++) {
-                Piece piece = board.pieceAt(new Position(file, rank));
-
-                if (piece == null) {
-                    System.out.print(". ");
-                } else {
-                    System.out.print(piece + " ");
-                }
-            }
-
-            System.out.println();
+        for (String notation : List.of("e2e4", "e7e5")) {
+            game.play(game.findLegalMove(notation).orElseThrow());
         }
-        
+        System.out.println(renderer.render(game.board()));
+
+        game.undoLastMove();
+        System.out.println(renderer.render(game.board()));
     }
 
     private Main() {

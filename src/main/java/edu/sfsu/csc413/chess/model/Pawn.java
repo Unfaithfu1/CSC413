@@ -36,38 +36,33 @@ public class Pawn extends Piece {
         Position preMove = new Position(from.file(), from.rank() + direction);
 
         if (preMove.rank() != 0 && preMove.rank() != 7) {
-            switch (from.rank()) {
-                case 1:
-                    if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
-                        moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), this));
-                        if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 2 : -2)))) {
+            if (from.rank() == 1 || from.rank() == 6) {
+                if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
+                    moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), this));
+                    if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 2 : -2)))) {
                         moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 2 : -2)), this));
                         }
-                    }
-                case 6:
-                    if (from.rank() == 6) {
-                        if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.BLACK ? 1 : -1)))) {
-                            moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.BLACK ? 1 : -1)), this));
-                            if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.BLACK ? 2 : -2)))) {
-                            moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.BLACK ? 2 : -2)), this));
-                            }
-                        }
-                    }
-                default:
-                    System.out.println("Default case for pawn at: " + from);
-                    if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
+                }
+            } else if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
                         moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), this));
-                    }
+                }
+        }
+
+        int capture = from.rank() + (color() == Color.WHITE ? 1 : -1);
+        if (from.file() < 7 && capture >= 0 && capture <= 7) {
+            Position rightCapture = new Position(from.file() + 1, capture);
+            
+            if (board.pieceAt(rightCapture) != null && board.pieceAt(rightCapture).color() != this.color()) {
+                moves.add(Move.capture(from, rightCapture, this, board.pieceAt(rightCapture)));
             }
         }
 
-        Position captureLeft = new Position(from.file() - 1, from.rank() + (color() == Color.WHITE ? 1 : -1));
-        Position captureRight = new Position(from.file() + 1, from.rank() + (color() == Color.WHITE ? 1 : -1));
-        if (board.pieceAt(captureLeft) != null && board.pieceAt(captureLeft).color() != color()) {
-            moves.add(Move.capture(from, captureLeft, this, board.pieceAt(captureLeft)));
-        }
-        if (board.pieceAt(captureRight) != null && board.pieceAt(captureRight).color() != color()) {
-            moves.add(Move.capture(from, captureRight, this, board.pieceAt(captureRight)));
+        if (from.file() > 0 && capture >= 0 && capture <= 7) {
+            Position leftCapture = new Position(from.file() - 1, capture);
+            
+            if (board.pieceAt(leftCapture) != null && board.pieceAt(leftCapture).color() != this.color()) {
+                moves.add(Move.capture(from, leftCapture, this, board.pieceAt(leftCapture)));
+            }
         }
 
         if ((color() == Color.WHITE && from.rank() == 6) || (color() == Color.BLACK && from.rank() == 0)) {

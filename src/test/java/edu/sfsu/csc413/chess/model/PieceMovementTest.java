@@ -98,7 +98,6 @@ class PieceMovementTest {
         Board board = BoardFactory.empty();
         board.place(Position.parse("e2"), new Pawn(Color.WHITE));
         board.place(Position.parse("e3"), new Pawn(Color.BLACK));
-        System.out.println("Testing now: ");
         assertTrue(destinationsFrom(board, "e2").isEmpty(),
                 "a pawn may neither capture straight ahead nor jump over the blocker");
     }
@@ -106,7 +105,6 @@ class PieceMovementTest {
     @Test
     @DisplayName("a pawn captures diagonally but not straight ahead")
     void pawnCaptures() {
-        System.out.println("Testing pawn captures from e4");
         Board board = BoardFactory.empty();
         board.place(Position.parse("e4"), new Pawn(Color.WHITE));
         board.place(Position.parse("d5"), new Pawn(Color.BLACK));   // capturable
