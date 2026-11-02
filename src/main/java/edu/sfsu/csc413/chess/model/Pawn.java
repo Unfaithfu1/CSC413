@@ -86,20 +86,11 @@ public class Pawn extends Piece {
      */
     @Override
     public boolean attacks(Board board, Position from, Position target) {
-        List<Move> attacks = new ArrayList<>();
-        attacks.add(Move.capture(from, new Position(from.file() + 1, from.rank() + (color() == Color.WHITE ? 1 : -1)), this, null));
-        attacks.add(Move.capture(from, new Position(from.file() - 1, from.rank() + (color() == Color.WHITE ? 1 : -1)), this, null));
-
-        Piece targetPiece = board.pieceAt(target);
-        if (targetPiece != null && targetPiece.color() == this.color()) {
-            return false;
-        }
-
-        for (Move attack : attacks) {
-            if (attack.to().equals(target)) {
-                return true;
-            }
-        }
-        return false;
+        int rankDirection = color() == Color.WHITE ? 1 : -1;
+        // Check if the target position is one of the two diagonal squares
+        Position rightCapture = from.offsetOrNull(1, rankDirection);
+        Position leftCapture = from.offsetOrNull(-1, rankDirection);
+        // Return true if the target position matches right of left capture.
+        return target.equals(rightCapture) || target.equals(leftCapture);
     }
 }

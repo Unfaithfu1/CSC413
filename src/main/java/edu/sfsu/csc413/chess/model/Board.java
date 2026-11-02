@@ -89,4 +89,16 @@ public class Board {
         }
         return result.toString();
     }
+
+    public Position kingPosition(Color color) {
+        for (int file = 0; file < Position.BOARD_SIZE; file++) {
+            for (int rank = 0; rank < Position.BOARD_SIZE; rank++) {
+                Piece piece = board[file][rank];
+                if (piece != null && piece.color() == color && piece instanceof King) {
+                    return new Position(file, rank);
+                }
+            }
+        }
+        return null;
+    }
 }

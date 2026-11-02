@@ -3,6 +3,7 @@ package edu.sfsu.csc413.chess.engine;
 import edu.sfsu.csc413.chess.model.Board;
 import edu.sfsu.csc413.chess.model.Color;
 import edu.sfsu.csc413.chess.model.Move;
+import edu.sfsu.csc413.chess.model.Piece;
 import edu.sfsu.csc413.chess.model.Position;
 
 import java.util.ArrayList;
@@ -41,7 +42,18 @@ public final class MoveGenerator {
      * when it tightens.
      */
     public static List<Move> legalMoves(Board board, Color color) {
-        return pseudoLegalMoves(board, color);
+        List<Move> legalMoves = new ArrayList<>();
+        // Generate all pseudo-legal moves for the given color
+        for (Move move : pseudoLegalMoves(board, color)) {
+            board.apply(move);
+            // Check if the king is in check after the move
+            if (!isInCheck(board, color)) {
+                legalMoves.add(move);
+            }
+            // Undo the move to restore the board state
+            board.undo(move);
+        }
+        return legalMoves;
     }
 
     /**
@@ -61,5 +73,36 @@ public final class MoveGenerator {
             moves.addAll(board.pieceAt(from).pseudoLegalMoves(board, from));
         }
         return moves;
+    }
+
+    public static boolean isAttacked(Board board, Position target, Color attacker) {
+        // Check if any piece of the attacker color can attack the target position
+        for (Position from: board.positionsOf(attacker)) {
+            Piece piece = board.pieceAt(from);
+            // Check if the piece can attack the target position
+            if (piece.attacks(board, from, target)) {
+                return true;
+            }
+        }
+        // If no pieces can attack the target return false
+        return false;
+    }
+
+    public static boolean isInCheck(Board board, Color color) {
+        // Find the position of the king
+        Position kingPosition = board.kingPosition(color);
+
+        // Get the opponents color and generate their pseudo-legal moves
+        Color opponentColor = (color == Color.WHITE) ? Color.BLACK : Color.WHITE;
+        List<Move> opponentMoves = pseudoLegalMoves(board, opponentColor);
+
+        // If a move is found that attacks the king return true
+        for (Move move : opponentMoves) {
+            if (move.to().equals(kingPosition)) {
+                return true;
+            }
+        }
+        // If no moves can attack the king return false
+        return false;
     }
 }
