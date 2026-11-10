@@ -84,11 +84,14 @@ public class Game {
      * with that case.
      */
     public Optional<Move> findLegalMove(String notation) {
+        // Check if all moves are legal and match the notation
         for (Move move : legalMoves()) {
             if (move.toString().equals(notation)) {
+                // If a move matches return it
                 return Optional.of(move);
             }
         }
+        // If no moves match return an empty optional
         return Optional.empty();
     }
 
@@ -100,12 +103,15 @@ public class Game {
      *         {@link #legalMoves()}
      */
     public void play(Move move) {
+        // If the move isn't legal throw an exception
         if (!legalMoves().contains(move)) {
             throw new IllegalArgumentException("Illegal move: " + move);
         }
+        // Apply the move to the board and history
         System.out.println("Playing " + move);
         board.apply(move);
         history.add(move);
+        // Switch the side to move to the other player
         sideToMove = sideToMove.opposite();
     }
 
@@ -116,12 +122,25 @@ public class Game {
      * was captured. In Week 10 this becomes the Command pattern proper.
      */
     public Optional<Move> undoLastMove() {
+        // If there is no history return an empty optional
         if (history.isEmpty()) {
             return Optional.empty();
         }
+        // Remove the last move from history
         Move lastMove = history.remove(history.size() - 1);
+        // Undo the last move on the board
         board.undo(lastMove);
+        // Switch the side to move back to the previous player
         sideToMove = sideToMove.opposite();
+        // Return the last move as an optional
         return Optional.of(lastMove);
+    }
+
+    public GameStatus status() {
+        return MoveGenerator.status(board, sideToMove);
+    }
+
+    public boolean isGameOver() {
+        return status().isGameOver();
     }
 }

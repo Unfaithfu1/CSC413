@@ -44,10 +44,12 @@ public record Move(Position from, Position to, Piece moved, Piece captured, Piec
     }
 
     public boolean isCapture() {
+        // Return if the move captured a piece
         return captured != null;
     }
 
     public boolean isPromotion() {
+        // Return if the move is a promotion
         return promotesTo != null;
     }
     /**
@@ -57,11 +59,15 @@ public record Move(Position from, Position to, Piece moved, Piece captured, Piec
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
+        // Append the from and to positions to the string builder
         sb.append(from);
         sb.append(to);
+        // If the move is a promotion
         if (isPromotion()) {
+            // Append the piece type it wants to promote to in lower case
             sb.append(Character.toLowerCase(promotesTo.symbol()));
         }
+        // Return the string representation of the move
         return sb.toString();
     }
 }

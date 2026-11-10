@@ -69,9 +69,12 @@ public final class MoveGenerator {
      */
     static List<Move> pseudoLegalMoves(Board board, Color color) {
         List<Move> moves = new ArrayList<>();
+        // For each position for a color
         for (Position from: board.positionsOf(color)) {
+            // Get the piece and generate all possible moves
             moves.addAll(board.pieceAt(from).pseudoLegalMoves(board, from));
         }
+        // Return all moves possible for that color
         return moves;
     }
 
@@ -104,5 +107,35 @@ public final class MoveGenerator {
         }
         // If no moves can attack the king return false
         return false;
+    }
+
+    public static GameStatus status(Board board, Color sideToMove) {
+        // Check if the current player is in check
+        boolean inCheck = isInCheck(board, sideToMove);
+        // Generate all legal moves for the current player
+        List<Move> legalMoves = legalMoves(board, sideToMove);
+        boolean isGameOver = legalMoves.isEmpty();
+
+        // Not in check and Has legal moves
+        boolean onGoing = !inCheck && !isGameOver;
+        // In check and has legal moves
+        boolean isCheck = inCheck && !isGameOver;
+        // In check and doesnt have legal moves
+        boolean isCheckmate = inCheck && isGameOver;
+        // Not in check and no legal move left
+        boolean isStalemate = !inCheck && isGameOver;
+        
+        // Return the game status based on the conditions
+        if (onGoing) {
+            return GameStatus.IN_PROGRESS;
+        } else if (isCheck) {
+            return GameStatus.CHECK;
+        } else if (isCheckmate) {
+            return GameStatus.CHECKMATE;
+        } else if (isStalemate) {
+            return GameStatus.STALEMATE;
+        } else {
+            throw new IllegalStateException("Unexpected game state");
+        }
     }
 }

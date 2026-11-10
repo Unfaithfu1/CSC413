@@ -32,44 +32,63 @@ public class Pawn extends Piece {
     @Override
     public List<Move> pseudoLegalMoves(Board board, Position from) {
         List<Move> moves = new ArrayList<>();
+        // Determines the direction based on color
         int direction = color() == Color.WHITE ? 1 : -1;
-        Position preMove = new Position(from.file(), from.rank() + direction);
+        // Determines the next rank possible
+        int nextRank = from.rank() + direction;
+        // Helps tell if pawn has reached the other side
+        int lastRank = color() == Color.WHITE ? Position.BOARD_SIZE - 1 : 0;
+        int startingRank = color() == Color.WHITE ? 1 : Position.BOARD_SIZE - 2;
 
-        if (preMove.rank() != 0 && preMove.rank() != 7) {
-            if (from.rank() == 1 || from.rank() == 6) {
-                if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
-                    moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), this));
-                    if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 2 : -2)))) {
-                        moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 2 : -2)), this));
+        // Returns moves if next rank for pawn is out of bounds
+        if (nextRank < 0 || nextRank >= Position.BOARD_SIZE) {
+            return moves;
+        }
+
+        // Check if the square in front is empty
+        Position forward = new Position(from.file(), nextRank);
+        if (board.isEmpty(forward)) {
+            if (nextRank == lastRank) {
+                // If the pawn has reached the other side, add the promotion move
+                for (PieceType choice : PROMOTION_CHOICES) {
+                    moves.add(Move.promotion(from, forward, this, null, choice));
+                }
+            } else {
+                // The square in front is empty, so the pawn can move forward
+                moves.add(Move.quiet(from, forward, this));
+                // If the pawn is on its starting rank it can move two squares
+                int PawnStart = color() == Color.WHITE ? 1 : Position.BOARD_SIZE - 2;
+                // Check if the position two squares ahead is empty
+                Position doubleStep = new Position(from.file(), PawnStart + 2 * direction);
+                // If pawn is on its starting rank and square two ahead is empty add move
+                if (from.rank() == startingRank && board.isEmpty(doubleStep)) {
+                    moves.add(Move.quiet(from, doubleStep, this));
+                }
+            }
+        }
+        // Check for captures diagonally
+        for (int fileOffset : new int[] {-1, 1}) {
+            int targetFile = from.file() + fileOffset;
+            if (targetFile < 0 || targetFile >= Position.BOARD_SIZE) {
+                continue;
+            }
+            // Check the diagonal squares
+            Position target = new Position(targetFile, nextRank);
+            Piece captured = board.pieceAt(target);
+            // Check if there is a piece of the opposite color
+            if (captured != null && captured.color() != color()) {
+                // If it can be promoted then add the promotion move
+                if (nextRank == lastRank) {
+                    for (PieceType choice : PROMOTION_CHOICES) {
+                        moves.add(Move.promotion(from, target, this, captured, choice));
                         }
+                } else {
+                    // Otherwise add a capture move
+                    moves.add(Move.capture(from, target, this, captured));
                 }
-            } else if (board.isEmpty(new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)))) {
-                        moves.add(Move.quiet(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), this));
-                }
-        }
-
-        int capture = from.rank() + (color() == Color.WHITE ? 1 : -1);
-        if (from.file() < 7 && capture >= 0 && capture <= 7) {
-            Position rightCapture = new Position(from.file() + 1, capture);
-            
-            if (board.pieceAt(rightCapture) != null && board.pieceAt(rightCapture).color() != this.color()) {
-                moves.add(Move.capture(from, rightCapture, this, board.pieceAt(rightCapture)));
             }
         }
-
-        if (from.file() > 0 && capture >= 0 && capture <= 7) {
-            Position leftCapture = new Position(from.file() - 1, capture);
-            
-            if (board.pieceAt(leftCapture) != null && board.pieceAt(leftCapture).color() != this.color()) {
-                moves.add(Move.capture(from, leftCapture, this, board.pieceAt(leftCapture)));
-            }
-        }
-
-        if ((color() == Color.WHITE && from.rank() == 6) || (color() == Color.BLACK && from.rank() == 0)) {
-            for (PieceType choices : PROMOTION_CHOICES) {
-                moves.add(Move.promotion(from, new Position(from.file(), from.rank() + (color() == Color.WHITE ? 1 : -1)), null, null, choices));
-            }
-        }
+        // Return all available moves for each pawn
         return moves;
     }
 
