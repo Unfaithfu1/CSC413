@@ -16,12 +16,19 @@ public final class Main {
         // Create new game
         Game game = new Game();
 
-        // If the user wants Emoji view or Console view
+        // Select the view from the command line.
         BoardView view;
-        if (args.length > 0 && args[0].equals("emoji")) {
-            view = new EmojiView();
+        if (args.length > 0) {
+            String choice = args[0].toLowerCase();
+            switch (choice) {
+                case "emoji" -> view = new EmojiView();
+                case "swing" -> view = new SwingView();
+                case "terminal" -> view = new TerminalChessView();
+                case "console" -> view = new ConsoleView();
+                default -> view = new TerminalChessView();
+            }
         } else {
-            view = new ConsoleView();
+            view = new TerminalChessView();
         }
 
         // Create a new game controller with the game and view

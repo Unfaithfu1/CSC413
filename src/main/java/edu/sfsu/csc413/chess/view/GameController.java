@@ -91,12 +91,12 @@ public class GameController {
             var legalMove = game.findLegalMove(move.notation());
             // If the move is a promotion we ask the player for what piece they want
             if (legalMove.isEmpty() && move.notation().length() == 4) {
-                var promotions = game.legalMoves().stream().filter(candidate -> candidate.isPromotion()&& candidate.toString().startsWith(move.notation())).toList();
+                var promotions = game.legalMoves().stream().filter(piece -> piece.isPromotion()&& piece.toString().startsWith(move.notation())).toList();
                 // If there are any promotions
                 if (!promotions.isEmpty()) {
                     // Ask the player for what piece they want
                     var choice = view.promotionChoice(game);
-                    legalMove = promotions.stream().filter(candidate -> candidate.promotesTo() == choice).findFirst();
+                    legalMove = promotions.stream().filter(piece -> piece.promotesTo() == choice).findFirst();
                 }
             }
             // If the move is legal we play it
