@@ -5,8 +5,8 @@ import edu.sfsu.csc413.chess.engine.GameStatus;
 import edu.sfsu.csc413.chess.model.Color;
 import edu.sfsu.csc413.chess.model.Move;
 import edu.sfsu.csc413.chess.model.Piece;
-import edu.sfsu.csc413.chess.model.PieceType;
 import edu.sfsu.csc413.chess.model.Position;
+import edu.sfsu.csc413.chess.model.PieceType;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -89,7 +89,7 @@ public class SwingView implements BoardView {
                 }
 
                 square.setBorder(BorderFactory.createLineBorder(new java.awt.Color(60, 60, 60), 1));
-                square.setText(piece == null ? "" : pieceGlyph(piece));
+                square.setText(PieceGlyphs.FIGURES.glyphFor(piece));
                 square.setForeground(piece != null && piece.color() == Color.WHITE
                         ? new java.awt.Color(255, 255, 255)
                         : new java.awt.Color(10, 10, 10));
@@ -174,7 +174,7 @@ public class SwingView implements BoardView {
         }
 
         Game game = controller.game();
-        if (game.isGameOver()) {
+        if (game.status().isGameOver()) {
             showMessage("Game is over. Press Undo to take back a move.");
             return;
         }
@@ -206,23 +206,13 @@ public class SwingView implements BoardView {
         }
 
         String notation = selectedSquare + clickedPosition.toString();
-        if (needsPromotion(game, selectedSquare, clickedPosition)) {
-            String promotion = askPromotion();
-            if (promotion == null) {
-                selectedSquare = null;
-                showMessage("Move cancelled.");
-                render(game);
-                return;
-            }
-            notation += promotion;
-        }
-
         controller.handle(new PlayerAction.Move(notation));
         selectedSquare = null;
         render(controller.game());
     }
 
-    private String askPromotion() {
+    @Override
+    public PieceType promotionChoice(Game game) {
         Object[] options = {"Queen", "Rook", "Bishop", "Knight"};
         int choice = JOptionPane.showOptionDialog(
                 frame,
@@ -235,18 +225,11 @@ public class SwingView implements BoardView {
                 options[0]);
 
         return switch (choice) {
-            case 1 -> "r";
-            case 2 -> "b";
-            case 3 -> "n";
-            default -> "q";
+            case 1 -> PieceType.ROOK;
+            case 2 -> PieceType.BISHOP;
+            case 3 -> PieceType.KNIGHT;
+            default -> PieceType.QUEEN;
         };
-    }
-
-    private static boolean needsPromotion(Game game, Position from, Position to) {
-        Piece piece = game.board().pieceAt(from);
-        return piece != null
-                && piece.type() == PieceType.PAWN
-                && to.rank() == game.sideToMove().promotionRank();
     }
 
     private static String formatColor(Color color) {
@@ -265,14 +248,4 @@ public class SwingView implements BoardView {
         };
     }
 
-    private static String pieceGlyph(Piece piece) {
-        return switch (piece.type()) {
-            case KING -> piece.color() == Color.WHITE ? "♔" : "♚";
-            case QUEEN -> piece.color() == Color.WHITE ? "♕" : "♛";
-            case ROOK -> piece.color() == Color.WHITE ? "♖" : "♜";
-            case BISHOP -> piece.color() == Color.WHITE ? "♗" : "♝";
-            case KNIGHT -> piece.color() == Color.WHITE ? "♘" : "♞";
-            case PAWN -> piece.color() == Color.WHITE ? "♙" : "♟";
-        };
-    }
 }
