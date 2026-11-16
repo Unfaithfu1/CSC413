@@ -1,5 +1,5 @@
 Group: Alone
-Model: Github Copilot
+Tool: Github Copilot
 Other View: terminal
 
 ## m7-run-1
@@ -20,6 +20,6 @@ Keep handleUndo: The handleUndo method is correctly calling our handleUndo branc
 Review:
 Keep promotionChoice: Its now overriding the promotionChoice in BoardView which is allowed if we want to allow changing to other pieces other than queen
 Keep formatColor|formatStatus: Its just for UI to tell the user whose turn it is and the status of the game doesn't reimplement any code and doesn't change any already implemented code.
-Keep initializeUI: Its just creating the swing view UI that the player sees and interactes with.
+Change render: Render is currently rendering all squares as a piece even if its an empty square. So when the game starts there are these black dots on each empty square.
 
 
