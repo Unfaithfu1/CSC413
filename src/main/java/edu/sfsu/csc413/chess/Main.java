@@ -25,10 +25,10 @@ public final class Main {
                 case "swing" -> view = new SwingView();
                 case "terminal" -> view = new TerminalChessView();
                 case "console" -> view = new ConsoleView();
-                default -> view = new TerminalChessView();
+                default -> view = new SwingView();
             }
         } else {
-            view = new TerminalChessView();
+            view = new SwingView();
         }
 
         // Create a new game controller with the game and view

@@ -1,25 +1,45 @@
-Group: Alone
-Model: Github Copilot
-Other View: terminal
+## 1. Group: Alone
+## 2. Tool: Github Copilot
+## 3. Other View: terminal
 
-## m7-run-1
+## 4. Runs
+### m7-run-1
 Model Request: "Read AGENTS.md and follow its instructions. Inspect my existing project then implement a new Swing view described with the provided restrictions"
 
-Review:
-Reject PieceGlyph: PieceGlyph is already implemented in out PieceGlyph class in view there is not reason to have it be reimplemented in our Swing View
-Change handleSquareClick: The handleSquareClick method is calling NeedsPromotion which is checking if a pawn can promote but we already have that implemented in our pawn.java so we should change it to implement the one in our pawn.java instead
-Keep handleUndo: The handleUndo method is correctly calling our handleUndo branch in our GameController class while updating the UI aftering undoing
 
-## m7-run-2
-Model Request: "Read AGENTS.md and follow its instructions. Inspect my existing project then implement a new Swing view described with the provided restrictions"
+### m7-run-2
+Model Request: "Read AGENTS.md and follow its instructions. Inspect my existing project then change our Swing view described with the provided restrictions. SwingView.java is reimplementing code"
 
-"Reject PieceGlyph: PieceGlyph is already implemented in out PieceGlyph class in view there is not reason to have it be reimplemented in our Swing View
-Change handleSquareClick: The handleSquareClick method is calling NeedsPromotion which is checking if a pawn can promote but we already have that implemented in our pawn.java so we should change it to implement the one in our pawn.java instead
-Keep handleUndo: The handleUndo method is correctly calling our handleUndo branch in our GameController class while updating the UI aftering undoing"
 
-Review:
-Keep promotionChoice: Its now overriding the promotionChoice in BoardView which is allowed if we want to allow changing to other pieces other than queen
-Keep formatColor|formatStatus: Its just for UI to tell the user whose turn it is and the status of the game doesn't reimplement any code and doesn't change any already implemented code.
-Keep initializeUI: Its just creating the swing view UI that the player sees and interactes with.
+### m7-run-3
+Model Request: "Read AGENTS.md and follow its instructions. Inspect my existing project then change Swing view described with the provided restrictions
+Currently the Swing UI is showing black dots on empty spaces. Change it so it doesn't show those dots"
 
+
+
+
+## 5. Rule Added
+Reuse existing classes and methods instead of remaking the functionality. Read all of the available files of the project before implementing to ensure no duplicate code.
+
+Reasoning: During the first prompt for the Coding Agent it reimplemented our pieceGlyph class into the SwingView which we should not do since its duplicating our code.
+
+## 6. Review
+
+File: SwingView.java
+Lines: 46-108
+Method: render
+Decision: Keep
+Reasoning: Render is now correctly showing empty spaces where applicable
+
+File: SwingBoardView.java
+Lines: 268-277
+Method: pieceGlyph
+Decision: Reject
+Reasoning: PieceGlyph is already implemented in our PieceGlyph class so there is no reason for it to be reimplemented in our Swing View
+
+File: SwingBoardView.java
+Lines: 171-223
+Method: handleSquareClick
+Decision: Change
+Reasoning: handleSquareClick is currently calling NeedsPromotion which is checking if a pawn can promot but we already have that implemented in the pawn class. The NeedsPromotion is just reimplementing it and handleSquareClick is calling it when it should just let the pawn piece handle promotions
 

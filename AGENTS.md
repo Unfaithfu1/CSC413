@@ -40,3 +40,7 @@ written by hand and are finished. Your job is views only.
 
 If you think a file under "Don't" has to change, stop and explain why
 instead of changing it.
+
+## Additional Rules
+- Reuse existing classes and methods instead of remaking the functionality. Read all of the available files of the project before implementing to ensure no duplicate code.
+- Any empty square in our board should be completely empty (" ") so the users know and can better differenciate the pieces.

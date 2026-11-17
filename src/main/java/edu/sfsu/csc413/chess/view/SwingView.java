@@ -89,7 +89,7 @@ public class SwingView implements BoardView {
                 }
 
                 square.setBorder(BorderFactory.createLineBorder(new java.awt.Color(60, 60, 60), 1));
-                square.setText(PieceGlyphs.FIGURES.glyphFor(piece));
+                square.setText(piece == null ? "" : PieceGlyphs.FIGURES.glyphFor(piece));
                 square.setForeground(piece != null && piece.color() == Color.WHITE
                         ? new java.awt.Color(255, 255, 255)
                         : new java.awt.Color(10, 10, 10));
