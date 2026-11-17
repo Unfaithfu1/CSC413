@@ -69,6 +69,9 @@ public class SwingView implements BoardView {
         for (int row = 0; row < Position.BOARD_SIZE; row++) {
             for (int file = 0; file < Position.BOARD_SIZE; file++) {
                 Position position = new Position(file, Position.BOARD_SIZE - 1 - row);
+                if (game.sideToMove() == Color.BLACK) {
+                    position = new Position(Position.BOARD_SIZE - 1 - file, row);
+                } 
                 Piece piece = game.board().pieceAt(position);
                 JButton square = new JButton();
                 square.setMargin(new Insets(0, 0, 0, 0));
